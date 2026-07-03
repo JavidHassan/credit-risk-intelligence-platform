@@ -108,6 +108,20 @@ The top score decile captures **6.7× the portfolio default rate** — the model
 
 Regenerate all charts with: `python scripts/generate_charts.py`
 
+### Dashboard
+
+Interactive Streamlit dashboard with six pages of portfolio analytics:
+
+| Portfolio Overview | Stress Testing |
+|:---:|:---:|
+| ![Dashboard Overview](docs/images/dashboard_overview.png) | ![Dashboard Stress](docs/images/dashboard_stress.png) |
+
+| Drift Monitoring |
+|:---:|
+| ![Dashboard Drift](docs/images/dashboard_drift.png) |
+
+Launch locally: `streamlit run src/dashboard/app.py`
+
 ## MLOps & Production
 
 ### Experiment Tracking (MLflow)
