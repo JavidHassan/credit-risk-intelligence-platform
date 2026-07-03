@@ -7,7 +7,7 @@ real credit risk teams.
 """
 
 import logging
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional
 
 import numpy as np
 import pandas as pd

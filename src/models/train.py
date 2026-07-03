@@ -10,7 +10,6 @@ Improvements over baseline:
 - Champion/challenger comparison logging
 """
 
-import json
 import logging
 import os
 from typing import Dict, Optional, Tuple, Any
