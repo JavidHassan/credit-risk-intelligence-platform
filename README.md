@@ -108,6 +108,31 @@ The top score decile captures **6.7× the portfolio default rate** — the model
 
 Regenerate all charts with: `python scripts/generate_charts.py`
 
+## MLOps & Production
+
+### Experiment Tracking (MLflow)
+Every training run logs parameters, CV scores, and test metrics to MLflow. Launch the UI with `mlflow ui` and open http://localhost:5000 to compare runs.
+
+### Model Registry & Champion/Challenger
+Models are versioned in a local registry (`models/registry.json`) with full metadata: training date, metrics, and feature list. New models are promoted to production **only if** they beat the current champion by ≥0.005 AUC.
+
+### Automated Retraining
+`python scripts/retrain_if_drift.py` closes the MLOps loop: detects feature drift (PSI) → retrains on fresh data → runs champion/challenger comparison → promotes or retains. Add `--force` to retrain regardless of drift.
+
+### Survival Analysis (Time-to-Default)
+Beyond binary default prediction, `src/models/survival_model.py` fits a Cox Proportional Hazards model to answer *when* a customer will default — with hazard ratios per feature and Kaplan-Meier survival curves. This is the approach used by real credit risk teams.
+
+### Production Monitoring (Prometheus)
+The API exposes a `/metrics` endpoint with request counts, latency histograms, prediction-probability distribution, and per-risk-level counters — ready to scrape with Prometheus and dashboard in Grafana.
+
+### Load Testing (Locust)
+```bash
+locust -f locustfile.py --host=http://localhost:8000 --headless -u 50 -r 10 --run-time 60s
+```
+
+### AWS Deployment
+Ready-to-use ECS Fargate deployment: task definition, step-by-step guide, and a manual-trigger GitHub Actions workflow. See [deploy/aws/README.md](deploy/aws/README.md).
+
 ## Quick Start
 
 ### Prerequisites
@@ -133,7 +158,7 @@ pip install -r requirements.txt
 python -m src.data_generation.generate_synthetic_data
 
 # Run the complete pipeline (preprocessing → features → training → risk → stress tests)
-python run_pipeline.py
+python scripts/run_pipeline.py
 
 # Run tests
 pytest tests/ -v

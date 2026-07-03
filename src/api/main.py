@@ -4,13 +4,22 @@ Endpoints for prediction, batch prediction, model metrics, and explainability.
 """
 
 import os
+import time
 import logging
 from typing import List
 from datetime import datetime
 
 import pandas as pd
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request, Response
 from pydantic import BaseModel, Field
+
+try:
+    from prometheus_client import (
+        Counter, Histogram, Gauge, generate_latest, CONTENT_TYPE_LATEST
+    )
+    HAS_PROMETHEUS = True
+except ImportError:
+    HAS_PROMETHEUS = False
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -20,6 +29,41 @@ app = FastAPI(
     description="API for credit card default prediction, risk scoring, and model explainability.",
     version="1.0.0",
 )
+
+# ── Prometheus metrics ─────────────────────────────────────────
+if HAS_PROMETHEUS:
+    REQUEST_COUNT = Counter(
+        "api_requests_total", "Total API requests",
+        ["method", "endpoint", "status"]
+    )
+    REQUEST_LATENCY = Histogram(
+        "api_request_latency_seconds", "Request latency",
+        ["endpoint"],
+        buckets=[0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5]
+    )
+    PREDICTION_PROBABILITY = Histogram(
+        "prediction_default_probability", "Distribution of predicted PDs",
+        buckets=[0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+    )
+    PREDICTIONS_TOTAL = Counter(
+        "predictions_total", "Total predictions served", ["risk_level"]
+    )
+    MODEL_LOADED = Gauge("model_loaded", "Whether the model is loaded (1/0)")
+
+    @app.middleware("http")
+    async def prometheus_middleware(request: Request, call_next):
+        start = time.perf_counter()
+        response = await call_next(request)
+        elapsed = time.perf_counter() - start
+        endpoint = request.url.path
+        REQUEST_COUNT.labels(request.method, endpoint, response.status_code).inc()
+        REQUEST_LATENCY.labels(endpoint).observe(elapsed)
+        return response
+
+    @app.get("/metrics")
+    async def prometheus_metrics():
+        """Prometheus scrape endpoint."""
+        return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 # Global state
 predictor = None
@@ -107,6 +151,9 @@ async def predict(features: CustomerFeatures):
     df = pd.DataFrame([feature_dict])
 
     result = predictor.predict(df)
+    if HAS_PROMETHEUS:
+        PREDICTION_PROBABILITY.observe(result["default_probability"])
+        PREDICTIONS_TOTAL.labels(result["risk_level"]).inc()
     return PredictionResponse(
         customer_id=customer_id,
         default_probability=result["default_probability"],

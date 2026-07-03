@@ -13,6 +13,7 @@ lifelines>=0.28.0
 
 # Experiment Tracking
 mlflow>=2.10.0
+skops>=0.10.0
 
 # Explainability
 shap>=0.43.0

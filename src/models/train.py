@@ -63,8 +63,18 @@ class CreditRiskModelTrainer:
         os.makedirs("models", exist_ok=True)
 
         if HAS_MLFLOW:
-            mlflow.set_experiment("credit-risk-pd-models")
-            logger.info("MLflow tracking enabled")
+            try:
+                # Pin a portable file-based backend. Without this, MLflow 3.x
+                # defaults to a sqlite:// URI that fails on some installs
+                # (e.g. mlflow-skinny) and differs across environments.
+                os.environ.setdefault("MLFLOW_ALLOW_FILE_STORE", "true")
+                tracking_dir = os.path.abspath("mlruns")
+                mlflow.set_tracking_uri(f"file:{tracking_dir}")
+                mlflow.set_experiment("credit-risk-pd-models")
+                logger.info(f"MLflow tracking enabled → {tracking_dir}")
+            except Exception as e:
+                logger.warning(f"MLflow unavailable, continuing without tracking: {e}")
+                globals()["HAS_MLFLOW"] = False
 
     def prepare_data(self, feature_table: pd.DataFrame) -> Tuple:
         """
@@ -300,8 +310,14 @@ class CreditRiskModelTrainer:
                 joblib.dump(self.feature_names, "models/feature_names.pkl")
 
             if HAS_MLFLOW:
-                mlflow.log_param("registered_version", version_id)
-                mlflow.sklearn.log_model(self.models[best_name], "best_model")
+                try:
+                    mlflow.log_param("registered_version", version_id)
+                    mlflow.sklearn.log_model(self.models[best_name], name="best_model")
+                except Exception as e:
+                    # Model artifact is already persisted via joblib + registry;
+                    # MLflow model logging is best-effort (e.g. requires `skops`
+                    # for sklearn flavor in MLflow 3.x).
+                    logger.warning(f"MLflow model logging skipped: {e}")
 
         finally:
             if HAS_MLFLOW and parent_run_id:
