@@ -66,6 +66,23 @@ class StressTester:
                 stressed["current_utilization"] + unemployment_increase * 2
             ).clip(0, 1)
 
+        # Stress the dominant bureau/behavioral drivers directly:
+        # recessions push credit scores down, incomes down, and late payments up
+        if "credit_score" in stressed.columns:
+            score_drop = unemployment_increase * 400  # e.g. 10% unemployment shock → -40 pts
+            stressed["credit_score"] = (stressed["credit_score"] - score_drop).clip(300, 850)
+
+        if "annual_income" in stressed.columns:
+            stressed["annual_income"] *= (1 - income_decrease)
+
+        if "late_count" in stressed.columns:
+            stressed["late_count"] = stressed["late_count"] + delinq_increase * 20
+
+        if "late_payment_count" in stressed.columns:
+            stressed["late_payment_count"] = (
+                stressed["late_payment_count"] + delinq_increase * 20
+            )
+
         logger.info(f"Applied '{scenario_name}' stress scenario")
         return stressed
 

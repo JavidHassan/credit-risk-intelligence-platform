@@ -1,0 +1,9 @@
+{
+  "total_expected_loss": 3841596.03,
+  "mean_expected_loss": 768.32,
+  "median_expected_loss": 179.94,
+  "max_expected_loss": 15718.61,
+  "total_ead": 166719620.11,
+  "loss_rate": 0.023,
+  "n_customers": 5000
+}

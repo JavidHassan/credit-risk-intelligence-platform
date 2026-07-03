@@ -23,11 +23,15 @@ class ModelEvaluator:
 
     def evaluate(self, model: Any, X_test: pd.DataFrame, y_test: pd.Series,
                  model_name: str) -> Dict:
-        """Run full evaluation suite on a model."""
-        y_pred = model.predict(X_test)
+        """Run full evaluation suite on a model with optimal threshold selection."""
         y_prob = model.predict_proba(X_test)[:, 1]
 
+        # Select the threshold that maximizes F1 (handles class imbalance)
+        optimal_threshold = self._optimal_threshold(y_test, y_prob)
+        y_pred = (y_prob >= optimal_threshold).astype(int)
+
         metrics = self._compute_metrics(y_test, y_pred, y_prob)
+        metrics["optimal_threshold"] = optimal_threshold
         ks_stat = self._ks_statistic(y_test, y_prob)
         lift = self._lift_chart_data(y_test, y_prob)
 
@@ -60,6 +64,13 @@ class ModelEvaluator:
             "confusion_matrix": cm.tolist(),
             "classification_report": classification_report(y_true, y_pred, output_dict=True),
         }
+
+    def _optimal_threshold(self, y_true, y_prob) -> float:
+        """Find the classification threshold that maximizes F1 score."""
+        precisions, recalls, thresholds = precision_recall_curve(y_true, y_prob)
+        f1_scores = 2 * precisions * recalls / (precisions + recalls + 1e-8)
+        best_idx = np.argmax(f1_scores[:-1])
+        return round(float(thresholds[best_idx]), 4)
 
     def _ks_statistic(self, y_true, y_prob) -> float:
         """Compute Kolmogorov-Smirnov statistic."""

@@ -245,10 +245,10 @@ class SyntheticBankDataGenerator:
 
         base_prob = 1 / (1 + np.exp(-(
             -4.0
-            - 0.008 * (df["credit_score"] - 680)
-            + 0.3 * df["late_count"]
-            - 0.00001 * df["annual_income"]
-            + 0.5 * (df["employment_status"] == "unemployed").astype(int)
+            - 0.020 * (df["credit_score"] - 680)
+            + 0.65 * df["late_count"]
+            - 0.00003 * df["annual_income"]
+            + 1.2 * (df["employment_status"] == "unemployed").astype(int)
         )))
 
         scale = self.default_rate / base_prob.mean()

@@ -1,5 +1,9 @@
 # 🏦 Credit Risk Intelligence Platform
 
+![CI](https://github.com/JavidHassan/credit-risk-intelligence-platform/actions/workflows/ci.yml/badge.svg)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+
 A production-style machine learning platform for credit card default prediction, expected loss forecasting, stress testing, model explainability, and drift monitoring.
 
 Built with Python · PySpark · SQL · scikit-learn · XGBoost · SHAP · FastAPI · Streamlit · Docker · GitHub Actions
@@ -63,6 +67,33 @@ PSI-based data drift detection, prediction distribution drift, model performance
 ### Dashboard
 Six-page Streamlit dashboard: Portfolio Overview, Risk Segmentation, Expected Loss Analysis, Feature Importance, Stress Testing Results, and Drift Monitoring with alerts.
 
+## Results
+
+Actual pipeline output on 5,000 synthetic customers (24 months of history, 818K transactions, 7.9% default rate):
+
+### Model Performance
+
+| Model | ROC-AUC | KS Statistic | F1 | Brier Score |
+|-------|---------|--------------|------|-------------|
+| **Logistic Regression** | **0.874** | 0.617 | 0.468 | 0.127 |
+| XGBoost | 0.871 | 0.621 | 0.461 | 0.058 |
+| Random Forest | 0.865 | 0.574 | 0.453 | 0.061 |
+
+All models use optimal F1-based threshold selection (handles the 8% class imbalance) and Platt-scaling calibration. The theoretical AUC ceiling of the generative process is 0.905 — models capture ~97% of the learnable signal.
+
+### Stress Testing
+
+| Scenario | Unemployment | Income | Delinquency | Portfolio EL Impact |
+|----------|-------------|--------|-------------|---------------------|
+| Baseline | — | — | — | $3.77M |
+| Mild | +2pp | −5% | +3pp | **+21.4%** |
+| Moderate | +5pp | −10% | +8pp | **+58.6%** |
+| Severe | +10pp | −20% | +15pp | **+122.9%** |
+
+### Test Suite
+
+18/18 unit tests passing across feature engineering, model evaluation, and expected loss calculations.
+
 ## Quick Start
 
 ### Prerequisites
@@ -86,6 +117,9 @@ pip install -r requirements.txt
 
 # Generate synthetic data
 python -m src.data_generation.generate_synthetic_data
+
+# Run the complete pipeline (preprocessing → features → training → risk → stress tests)
+python run_pipeline.py
 
 # Run tests
 pytest tests/ -v

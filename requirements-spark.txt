@@ -1,0 +1,2 @@
+# Optional PySpark dependency (requires Java 8+)
+pyspark>=3.5.0

@@ -1,0 +1,28 @@
+{
+  "baseline": {
+    "avg_pd": 0.2809,
+    "total_expected_loss": 16119646.35,
+    "default_rate": 0.2286
+  },
+  "mild": {
+    "avg_pd": 0.3345,
+    "total_expected_loss": 19560515.57,
+    "default_rate": 0.2934,
+    "el_increase_pct": 21.35,
+    "pd_increase_pct": 19.07
+  },
+  "moderate": {
+    "avg_pd": 0.4228,
+    "total_expected_loss": 25572918.89,
+    "default_rate": 0.4104,
+    "el_increase_pct": 58.64,
+    "pd_increase_pct": 50.52
+  },
+  "severe": {
+    "avg_pd": 0.5651,
+    "total_expected_loss": 35928050.49,
+    "default_rate": 0.5862,
+    "el_increase_pct": 122.88,
+    "pd_increase_pct": 101.18
+  }
+}

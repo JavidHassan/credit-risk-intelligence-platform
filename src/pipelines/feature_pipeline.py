@@ -198,6 +198,14 @@ class CreditFeatureEngineer:
         for df in [payments, spending, delinquency, transactions, income_debt]:
             feature_table = feature_table.merge(df, on="customer_id", how="left")
 
+        # Add customer demographic and bureau features (strong predictors)
+        customer_cols = ["customer_id", "credit_score", "age", "annual_income",
+                         "employment_years", "dependents"]
+        available_cols = [c for c in customer_cols if c in datasets["customers"].columns]
+        feature_table = feature_table.merge(
+            datasets["customers"][available_cols], on="customer_id", how="left"
+        )
+
         feature_table = feature_table.merge(
             datasets["defaults"][["customer_id", "is_default", "default_probability"]],
             on="customer_id", how="left"
