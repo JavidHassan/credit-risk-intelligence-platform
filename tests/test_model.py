@@ -1,7 +1,6 @@
 """Tests for model training and evaluation."""
 
 import pytest
-import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.datasets import make_classification

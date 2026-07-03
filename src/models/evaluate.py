@@ -38,7 +38,7 @@ class ModelEvaluator:
         metrics["ks_statistic"] = ks_stat
         metrics["lift_data"] = lift
 
-        logger.info(f"\n{'='*50}")
+        logger.info(f"\n{'=' * 50}")
         logger.info(f"Model: {model_name}")
         logger.info(f"ROC-AUC:     {metrics['roc_auc']:.4f}")
         logger.info(f"PR-AUC:      {metrics['pr_auc']:.4f}")
@@ -47,7 +47,7 @@ class ModelEvaluator:
         logger.info(f"F1:          {metrics['f1']:.4f}")
         logger.info(f"KS Stat:     {metrics['ks_statistic']:.4f}")
         logger.info(f"Brier Score: {metrics['brier_score']:.4f}")
-        logger.info(f"{'='*50}")
+        logger.info(f"{'=' * 50}")
 
         return metrics
 

@@ -6,7 +6,7 @@ PSI-based drift monitoring, feature distribution checks, and retraining triggers
 import logging
 import numpy as np
 import pandas as pd
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List
 import yaml
 
 logging.basicConfig(level=logging.INFO)
@@ -98,8 +98,8 @@ class DriftDetector:
             "is_drifted": psi > self.psi_threshold,
         }
 
-        logger.info(f"Prediction drift PSI: {psi:.4f} "
-                     f"({'DRIFTED' if result['is_drifted'] else 'OK'})")
+        status = "DRIFTED" if result["is_drifted"] else "OK"
+        logger.info(f"Prediction drift PSI: {psi:.4f} ({status})")
         return result
 
     def check_performance_decay(

@@ -7,7 +7,7 @@ Supports PySpark for scalable processing and Pandas for local development.
 import logging
 import numpy as np
 import pandas as pd
-from typing import Dict, List, Optional
+from typing import Dict
 import yaml
 
 logging.basicConfig(level=logging.INFO)
@@ -45,8 +45,6 @@ class CreditFeatureEngineer:
     def compute_payment_features(self, statements: pd.DataFrame, payments: pd.DataFrame) -> pd.DataFrame:
         """Payment behavior metrics."""
         logger.info("Computing payment features...")
-        stmt_grouped = statements.groupby("customer_id")
-
         payment_ratio = statements.copy()
         payment_ratio["payment_to_balance"] = np.where(
             payment_ratio["statement_balance"] > 0,

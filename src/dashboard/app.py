@@ -3,16 +3,11 @@ Streamlit Credit Risk Dashboard
 Portfolio analytics, risk segmentation, expected loss, drift alerts, and stress testing.
 """
 
-import os
-import sys
-import json
 import logging
 import numpy as np
 import pandas as pd
 import streamlit as st
 import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 
 logging.basicConfig(level=logging.INFO)
 

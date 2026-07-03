@@ -94,6 +94,20 @@ All models use optimal F1-based threshold selection (handles the 8% class imbala
 
 18/18 unit tests passing across feature engineering, model evaluation, and expected loss calculations.
 
+### Visuals
+
+| ROC Curves | Stress Testing |
+|:---:|:---:|
+| ![ROC](docs/images/roc_curves.png) | ![Stress](docs/images/stress_test.png) |
+
+| Lift Chart | Feature Importance |
+|:---:|:---:|
+| ![Lift](docs/images/lift_chart.png) | ![Importance](docs/images/feature_importance.png) |
+
+The top score decile captures **6.7× the portfolio default rate** — the model concentrates risk effectively for collections prioritization and limit management.
+
+Regenerate all charts with: `python scripts/generate_charts.py`
+
 ## Quick Start
 
 ### Prerequisites

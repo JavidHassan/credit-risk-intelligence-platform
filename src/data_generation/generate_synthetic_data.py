@@ -8,8 +8,8 @@ import os
 import logging
 import numpy as np
 import pandas as pd
-from datetime import datetime, timedelta
-from typing import Dict, Tuple
+from datetime import timedelta
+from typing import Dict
 import yaml
 
 logging.basicConfig(level=logging.INFO)

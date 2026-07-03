@@ -5,10 +5,9 @@ Endpoints for prediction, batch prediction, model metrics, and explainability.
 
 import os
 import logging
-from typing import Dict, List, Optional
+from typing import List
 from datetime import datetime
 
-import numpy as np
 import pandas as pd
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
@@ -71,7 +70,7 @@ class HealthResponse(BaseModel):
 @app.on_event("startup")
 async def startup():
     """Load model on startup."""
-    global predictor, model_metrics
+    global predictor
     try:
         from src.models.predict import CreditRiskPredictor
         model_path = os.getenv("MODEL_PATH", "models/best_model.pkl")

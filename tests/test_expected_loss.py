@@ -1,7 +1,6 @@
 """Tests for expected loss calculations."""
 
 import pytest
-import numpy as np
 import pandas as pd
 from src.risk.expected_loss import ExpectedLossCalculator
 
